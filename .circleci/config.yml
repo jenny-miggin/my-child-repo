@@ -8,15 +8,10 @@ orbs:
 
 jobs:
   build_and_deploy_image:
-    docker:
-      - image: cimg/base:stable
-    resource_class: small
-    steps:
-      - checkout
-      - run: 
-          name: Building and deploying the image
-          command: |
-            echo "Building and deploying the image << pipeline.parameters.image_name >> using the role: << pipeline.parameters.aws_role_arn >>"
+    # If this job is not overridden, it will be a no-op
+    type: no-op
+  
+  # This test job is specific to this repo
   test:
     parameters:
       aws_role_arn:
