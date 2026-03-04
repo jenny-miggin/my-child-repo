@@ -13,6 +13,18 @@ parameters:
   image_name:
     type: string
     default: ""
+  ecr_repo:
+    type: string
+    default: "child-repo-ecr-repo"
+  source:
+    type: string
+    default: "child-repo-source"
+  ssm_prefix:
+    type: string
+    default: "child-repo-ssm-prefix"
+  region:
+    type: string
+    default: "eu-west-1"
 
 jobs:
   build_and_deploy_image:
@@ -47,6 +59,10 @@ workflows:
           # This overrides the build_and_deploy_image job in this config, with that from the template in the circleci-shared-config repo
           override-with: template/build_and_deploy_image
           image_name: "child-repo-image"
+          ecr_repo: << pipeline.parameters.ecr_repo >>
+          source: << pipeline.parameters.source >>
+          ssm_prefix: << pipeline.parameters.ssm_prefix >>
+          region: << pipeline.parameters.region >>
       - test:
           aws_role_arn: << pipeline.parameters.aws_role_arn >>
           # filters:
