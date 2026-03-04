@@ -1,11 +1,30 @@
 version: 2.1
 
+orbs:
+  # This is the template that resides in the circleci-shared-config repo
+  # It is the link to the raw file in the repo, so that it can be used in the pipeline
+  # For more info, check out: https://circleci.com/docs/guides/orchestrate/how-to-override-config/ 
+  template: "https://raw.githubusercontent.com/jenny-miggin/circleci-shared-config/refs/heads/main/build-n-push-ecr-image-template.yaml"
+
 parameters:
   aws_role_arn:
     type: string
     default: "abc-234-role"
+  image_name:
+    type: string
+    default: ""
 
 jobs:
+  build_and_deploy_image:
+    docker:
+      - image: cimg/base:stable
+    resource_class: small
+    steps:
+      - checkout
+      - run: 
+          name: Building and deploying the image
+          command: |
+            echo "Building and deploying the image << pipeline.parameters.image_name >> using the role: << pipeline.parameters.aws_role_arn >>"
   test:
     parameters:
       aws_role_arn:
@@ -24,6 +43,10 @@ jobs:
 workflows:
   build-and-deploy:
     jobs:
+      - build_and_deploy_image:
+          # This overrides the build_and_deploy_image job in this config, with that from the template in the circleci-shared-config repo
+          override-with: template/build_and_deploy_image
+          image_name: "child-repo-image"
       - test:
           aws_role_arn: << pipeline.parameters.aws_role_arn >>
           # filters:
