@@ -1,0 +1,31 @@
+version: 2.1
+
+parameters:
+  aws_role_arn:
+    type: string
+    default: "abc-234-role"
+
+jobs:
+  test:
+    parameters:
+      aws_role_arn:
+        type: string
+    docker:
+      - image: cimg/base:stable
+    resource_class: small
+    steps:
+      - checkout
+      - run: 
+          name: Testing the build and deploy image
+          command: |
+            echo "Testing the build and deploy image using the role: << parameters.aws_role_arn >>"
+
+
+workflows:
+  build-and-deploy:
+    jobs:
+      - test:
+          aws_role_arn: << pipeline.parameters.aws_role_arn >>
+          # filters:
+          #   branches:
+          #     only: main
