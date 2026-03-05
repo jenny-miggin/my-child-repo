@@ -1,69 +1,24 @@
 version: 2.1
 
-orbs:
-  # This is the template that resides in the circleci-shared-config repo
-  # It is the link to the raw file in the repo, so that it can be used in the pipeline
-  # This works similarly to the traditional orb
-  template: "https://raw.githubusercontent.com/jenny-miggin/circleci-shared-config/refs/heads/main/build-n-push-ecr-image-template.yaml"
-
 parameters:
   run_test:
     type: boolean
     default: false
 
 jobs:
-  build_and_deploy_image:
-    parameters:
-      image_name:
-        type: string
-      ecr_repo:
-        type: string
-      source:
-        type: string
-      ssm_prefix:
-        type: string
-      region:
-        type: string
+  test:
     docker:
       - image: cimg/base:stable
     resource_class: small
     steps:
       - checkout
       - run:
-          name: Building and deploying the image
-          command: |
-            echo "Building and deploying the image << pipeline.parameters.image_name >> using the role: << pipeline.parameters.aws_role_arn >>"
-  # This test job is specific to this repo
-  test:
-    parameters:
-      aws_role_arn:
-        type: string
-    docker:
-      - image: cimg/base:stable
-    resource_class: small
-    steps:
-      - checkout
-      - run: 
           name: Testing the build and deploy image
           command: |
-            echo "Testing the build and deploy image using the role: << parameters.aws_role_arn >>"
-
+            echo "Testing the build and deploy image using the role: $AWS_ROLE_ARN"
 
 workflows:
-  build-and-deploy:
+  run-tests:
+    when: << pipeline.parameters.run_test >>
     jobs:
-      - template/build_and_deploy_image:
-          override-with: build_and_deploy_image
-          image_name: "child-repo-image"
-          ecr_repo: "child-repo-ecr-repo"
-          source: "child-repo-source"
-          ssm_prefix: "child-repo-ssm-prefix"
-          region: "eu-west-1"
-      - test:
-          aws_role_arn: "abc-234-role"
-          ## only run the test job if on the main branch
-          # filters:
-          #   branches:
-          #     only: main
-          ## only run the test job if the run_test parameter is true
-          # when: << pipeline.parameters.run_test >>
+      - test
