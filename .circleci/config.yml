@@ -6,10 +6,12 @@ orbs:
   # For more info, check out: https://circleci.com/docs/guides/orchestrate/how-to-override-config/ 
   template: "https://raw.githubusercontent.com/jenny-miggin/circleci-shared-config/refs/heads/main/build-n-push-ecr-image-template.yaml"
 
+parameters:
+  run_test:
+    type: boolean
+    default: false
+
 jobs:
-  build_and_deploy_image:
-    # If this job is not overridden, it will be a no-op
-    type: no-op
   
   # This test job is specific to this repo
   test:
@@ -40,6 +42,6 @@ workflows:
           region: "eu-west-1"
       - test:
           aws_role_arn: "abc-234-role"
-          # filters:
-          #   branches:
-          #     only: main
+          ## only run the test job if on the main branch
+          ## only run the test job if the run_test parameter is true
+          # when: << pipeline.parameters.run_test >>
