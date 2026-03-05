@@ -3,7 +3,7 @@ version: 2.1
 orbs:
   # This is the template that resides in the circleci-shared-config repo
   # It is the link to the raw file in the repo, so that it can be used in the pipeline
-  # For more info, check out: https://circleci.com/docs/guides/orchestrate/how-to-override-config/ 
+  # This works similarly to the traditional orb
   template: "https://raw.githubusercontent.com/jenny-miggin/circleci-shared-config/refs/heads/main/build-n-push-ecr-image-template.yaml"
 
 parameters:
