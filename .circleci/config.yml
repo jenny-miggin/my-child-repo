@@ -1,11 +1,19 @@
 version: 2.1
 
+orbs:
+  # This is the template that resides in the circleci-shared-config repo
+  # It is the link to the raw file in the repo, so that it can be used in the pipeline
+  # For more info, check out: https://circleci.com/docs/guides/orchestrate/how-to-override-config/ 
+  template: "https://raw.githubusercontent.com/jenny-miggin/circleci-shared-config/refs/heads/main/build-n-push-ecr-image-template.yaml"
+
 parameters:
-  aws_role_arn:
-    type: string
-    default: "abc-234-role"
+  run_test:
+    type: boolean
+    default: false
 
 jobs:
+  
+  # This test job is specific to this repo
   test:
     parameters:
       aws_role_arn:
@@ -24,8 +32,17 @@ jobs:
 workflows:
   build-and-deploy:
     jobs:
+      - template/build_and_deploy_image:
+          image_name: "child-repo-image"
+          ecr_repo: "child-repo-ecr-repo"
+          source: "child-repo-source"
+          ssm_prefix: "child-repo-ssm-prefix"
+          region: "eu-west-1"
       - test:
-          aws_role_arn: << pipeline.parameters.aws_role_arn >>
+          aws_role_arn: "abc-234-role"
+          ## only run the test job if on the main branch
           # filters:
           #   branches:
           #     only: main
+          ## only run the test job if the run_test parameter is true
+          # when: << pipeline.parameters.run_test >>
