@@ -32,9 +32,7 @@ jobs:
 workflows:
   build-and-deploy:
     jobs:
-      - build_and_deploy_image:
-          # This overrides the build_and_deploy_image job in this config, with that from the template in the circleci-shared-config repo
-          override-with: template/build_and_deploy_image
+      - template/build_and_deploy_image:
           image_name: "child-repo-image"
           ecr_repo: "child-repo-ecr-repo"
           source: "child-repo-source"
@@ -43,5 +41,8 @@ workflows:
       - test:
           aws_role_arn: "abc-234-role"
           ## only run the test job if on the main branch
+          # filters:
+          #   branches:
+          #     only: main
           ## only run the test job if the run_test parameter is true
           # when: << pipeline.parameters.run_test >>
