@@ -10,6 +10,9 @@ parameters:
   run_test:
     type: boolean
     default: false
+  image_name:
+    type: string
+    default: "child-repo-image"
 
 jobs:
   
@@ -33,7 +36,7 @@ workflows:
   build-and-deploy:
     jobs:
       - template/build_and_deploy_image:
-          image_name: "child-repo-image"
+          image_name: << pipeline.parameters.image_name >>
           ecr_repo: "child-repo-ecr-repo"
           source: "child-repo-source"
           ssm_prefix: "child-repo-ssm-prefix"
