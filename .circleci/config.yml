@@ -45,4 +45,4 @@ workflows:
           #   branches:
           #     only: main
           ## only run the test job if the run_test parameter is true
-          # when: << pipeline.parameters.run_test >>
+          when: << pipeline.parameters.run_test >>
